@@ -1,7 +1,10 @@
+import React from "react";
+import InputForm from "./InputForm";
+
 function App() {
   return (
-    <div>
-      <h1>Prompt Engineering Practice: PEP Session</h1>
+    <div className="App">
+      <InputForm />
     </div>
   );
 }
