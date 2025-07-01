@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reptile Interactive Cursor</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #0a0a0a;
+            cursor: none;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: #4ade80;
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+        }
+
+        .reptile-segment {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.1s ease-out;
+        }
+
+        .segment {
+            width: 20px;
+            height: 20px;
+            background: radial-gradient(circle, #4ade80 0%, #22c55e 50%, #16a34a 100%);
+            border-radius: 50%;
+            border: 2px solid #86efac;
+            box-shadow: 
+                0 0 10px #4ade80,
+                inset 0 0 5px rgba(255,255,255,0.3);
+            position: relative;
+        }
+
+        .segment::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 8px;
+            height: 8px;
+            background: #dcfce7;
+            border-radius: 50%;
+            opacity: 0.8;
+        }
+
+        .head {
+            width: 25px;
+            height: 25px;
+            background: radial-gradient(circle, #65a30d 0%, #4d7c0f 50%, #365314 100%);
+            border: 2px solid #a3e635;
+            box-shadow: 
+                0 0 15px #65a30d,
+                inset 0 0 8px rgba(255,255,255,0.4);
+        }
+
+        .head::before {
+            width: 10px;
+            height: 10px;
+            background: #fef3c7;
+            box-shadow: 0 0 5px #fbbf24;
+        }
+
+        .head::after {
+            content: '';
+            position: absolute;
+            top: 30%;
+            left: 15%;
+            width: 3px;
+            height: 3px;
+            background: #dc2626;
+            border-radius: 50%;
+            box-shadow: 
+                8px 0 0 #dc2626,
+                0 0 3px #ef4444;
+        }
+
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #4ade80;
+            font-size: 14px;
+            z-index: 100;
+            text-shadow: 0 0 10px #4ade80;
+        }
+
+        .grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            background-image: 
+                linear-gradient(rgba(74, 222, 128, 0.1) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(74, 222, 128, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            pointer-events: none;
+        }
+
+        .trail {
+            position: absolute;
+            pointer-events: none;
+            width: 4px;
+            height: 4px;
+            background: #4ade80;
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            to {
+                opacity: 0;
+                transform: scale(0);
+            }
+        }
+
+        .code-sample {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid #4ade80;
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #4ade80;
+            max-width: 300px;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.3);
+        }
+
+        .code-line {
+            margin: 2px 0;
+        }
+
+        .keyword { color: #f59e0b; }
+        .function { color: #3b82f6; }
+        .string { color: #10b981; }
+        .comment { color: #6b7280; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="grid"></div>
+        
+        <div class="info">
+            <div>🐍 Reptile Interactive Cursor</div>
+            <div style="font-size: 12px; margin-top: 5px; opacity: 0.8;">
+                Move your mouse to control the snake
+            </div>
+        </div>
+
+        <div class="code-sample">
+            <div class="code-line"><span class="keyword">document</span>.<span class="function">addEventListener</span>(<span class="string">"mousemove"</span>, <span class="keyword">function</span>(<span class="keyword">event</span>) {</div>
+            <div class="code-line">&nbsp;&nbsp;<span class="keyword">if</span> ((<span class="keyword">event</span>.button = <span class="string">0</span>)) {</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;Input.mouse.left = <span class="keyword">true</span>;</div>
+            <div class="code-line">&nbsp;&nbsp;}</div>
+            <div class="code-line">&nbsp;&nbsp;<span class="comment">// Update reptile position</span></div>
+            <div class="code-line">});</div>
+        </div>
+    </div>
+
+    <script>
+        class ReptileCursor {
+            constructor() {
+                this.segments = [];
+                this.segmentCount = 15;
+                this.mouseX = window.innerWidth / 2;
+                this.mouseY = window.innerHeight / 2;
+                this.trail = [];
+                
+                this.init();
+                this.bindEvents();
+                this.animate();
+            }
+
+            init() {
+                // Create reptile segments
+                for (let i = 0; i < this.segmentCount; i++) {
+                    const segment = document.createElement('div');
+                    segment.className = 'reptile-segment';
+                    
+                    const segmentInner = document.createElement('div');
+                    segmentInner.className = i === 0 ? 'segment head' : 'segment';
+                    
+                    segment.appendChild(segmentInner);
+                    document.body.appendChild(segment);
+                    
+                    this.segments.push({
+                        element: segment,
+                        x: this.mouseX,
+                        y: this.mouseY,
+                        targetX: this.mouseX,
+                        targetY: this.mouseY
+                    });
+                }
+            }
+
+            bindEvents() {
+                document.addEventListener('mousemove', (e) => {
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                    
+                    // Create trail effect
+                    this.createTrail(e.clientX, e.clientY);
+                });
+
+                document.addEventListener('click', (e) => {
+                    this.createClickEffect(e.clientX, e.clientY);
+                });
+
+                // Handle window resize
+                window.addEventListener('resize', () => {
+                    this.mouseX = window.innerWidth / 2;
+                    this.mouseY = window.innerHeight / 2;
+                });
+            }
+
+            createTrail(x, y) {
+                if (Math.random() > 0.7) {
+                    const trail = document.createElement('div');
+                    trail.className = 'trail';
+                    trail.style.left = x + 'px';
+                    trail.style.top = y + 'px';
+                    document.body.appendChild(trail);
+                    
+                    setTimeout(() => {
+                        if (trail.parentNode) {
+                            trail.parentNode.removeChild(trail);
+                        }
+                    }, 1000);
+                }
+            }
+
+            createClickEffect(x, y) {
+                for (let i = 0; i < 8; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.style.position = 'absolute';
+                        particle.style.left = x + 'px';
+                        particle.style.top = y + 'px';
+                        particle.style.width = '6px';
+                        particle.style.height = '6px';
+                        particle.style.background = '#4ade80';
+                        particle.style.borderRadius = '50%';
+                        particle.style.pointerEvents = 'none';
+                        particle.style.zIndex = '1001';
+                        
+                        const angle = (Math.PI * 2 * i) / 8;
+                        const velocity = 3;
+                        const vx = Math.cos(angle) * velocity;
+                        const vy = Math.sin(angle) * velocity;
+                        
+                        document.body.appendChild(particle);
+                        
+                        let particleX = x;
+                        let particleY = y;
+                        let opacity = 1;
+                        
+                        const animateParticle = () => {
+                            particleX += vx;
+                            particleY += vy;
+                            opacity -= 0.02;
+                            
+                            particle.style.left = particleX + 'px';
+                            particle.style.top = particleY + 'px';
+                            particle.style.opacity = opacity;
+                            
+                            if (opacity > 0) {
+                                requestAnimationFrame(animateParticle);
+                            } else {
+                                if (particle.parentNode) {
+                                    particle.parentNode.removeChild(particle);
+                                }
+                            }
+                        };
+                        
+                        requestAnimationFrame(animateParticle);
+                    }, i * 50);
+                }
+            }
+
+            updateSegments() {
+                // Update head position
+                this.segments[0].targetX = this.mouseX;
+                this.segments[0].targetY = this.mouseY;
+                
+                // Update each segment to follow the previous one
+                for (let i = 0; i < this.segments.length; i++) {
+                    const segment = this.segments[i];
+                    
+                    // Smooth movement
+                    const dx = segment.targetX - segment.x;
+                    const dy = segment.targetY - segment.y;
+                    
+                    segment.x += dx * 0.2;
+                    segment.y += dy * 0.2;
+                    
+                    // Update DOM position
+                    segment.element.style.left = (segment.x - 12) + 'px';
+                    segment.element.style.top = (segment.y - 12) + 'px';
+                    
+                    // Set target for next segment
+                    if (i < this.segments.length - 1) {
+                        const nextSegment = this.segments[i + 1];
+                        const distance = 25;
+                        
+                        const angle = Math.atan2(segment.y - nextSegment.y, segment.x - nextSegment.x);
+                        nextSegment.targetX = segment.x - Math.cos(angle) * distance;
+                        nextSegment.targetY = segment.y - Math.sin(angle) * distance;
+                    }
+                    
+                    // Add slight rotation and scale effect
+                    const scale = 1 - (i * 0.03);
+                    const rotation = Math.atan2(dy, dx) * (180 / Math.PI);
+                    
+                    segment.element.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
+                    segment.element.style.opacity = 1 - (i * 0.05);
+                }
+            }
+
+            animate() {
+                this.updateSegments();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize the reptile cursor when the page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            new ReptileCursor();
+        });
+
+        // Add some interactive elements
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                // Create a burst effect
+                for (let i = 0; i < 12; i++) {
+                    setTimeout(() => {
+                        const burst = document.createElement('div');
+                        burst.style.position = 'absolute';
+                        burst.style.left = (Math.random() * window.innerWidth) + 'px';
+                        burst.style.top = (Math.random() * window.innerHeight) + 'px';
+                        burst.style.width = '8px';
+                        burst.style.height = '8px';
+                        burst.style.background = '#4ade80';
+                        burst.style.borderRadius = '50%';
+                        burst.style.pointerEvents = 'none';
+                        burst.style.boxShadow = '0 0 10px #4ade80';
+                        burst.style.animation = 'fadeOut 2s ease-out forwards';
+                        
+                        document.body.appendChild(burst);
+                        
+                        setTimeout(() => {
+                            if (burst.parentNode) {
+                                burst.parentNode.removeChild(burst);
+                            }
+                        }, 2000);
+                    }, i * 100);
+                }
+            }
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lizard Interactive Cursor - Enhanced Legs</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            cursor: none;
+            overflow: hidden;
+            font-family: 'Courier New', monospace;
+            color: rgba(255, 255, 255, 0.8);
+            min-height: 100vh;
+        }
+
+        .container {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(120, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 119, 198, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(120, 219, 226, 0.05) 0%, transparent 50%);
+        }
+
+        .lizard-segment {
+            position: absolute;
+            pointer-events: none;
+            z-index: 1000;
+            transition: all 0.1s cubic-bezier(0.4, 0, 0.2, 1);
+            filter: drop-shadow(0 0 8px rgba(120, 219, 226, 0.3));
+        }
+
+        .segment {
+            width: 28px;
+            height: 32px;
+            background: none;
+            border: 2px solid rgba(120, 219, 226, 0.9);
+            border-radius: 45% 45% 50% 50%;
+            box-shadow: 
+                0 0 12px rgba(120, 219, 226, 0.4),
+                inset 0 0 6px rgba(120, 219, 226, 0.2),
+                0 0 20px rgba(120, 219, 226, 0.1);
+            position: relative;
+            animation: segmentPulse 3s ease-in-out infinite;
+        }
+
+        @keyframes segmentPulse {
+            0%, 100% { 
+                box-shadow: 
+                    0 0 12px rgba(120, 219, 226, 0.4),
+                    inset 0 0 6px rgba(120, 219, 226, 0.2),
+                    0 0 20px rgba(120, 219, 226, 0.1);
+            }
+            50% { 
+                box-shadow: 
+                    0 0 16px rgba(120, 219, 226, 0.6),
+                    inset 0 0 8px rgba(120, 219, 226, 0.3),
+                    0 0 25px rgba(120, 219, 226, 0.2);
+            }
+        }
+
+        .segment::before {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(120, 219, 226, 0.8) 20%, 
+                rgba(255, 255, 255, 0.9) 50%, 
+                rgba(120, 219, 226, 0.8) 80%, 
+                transparent);
+            box-shadow: 0 0 6px rgba(120, 219, 226, 0.5);
+            animation: spineGlow 2s ease-in-out infinite alternate;
+        }
+
+        @keyframes spineGlow {
+            0% { opacity: 0.6; }
+            100% { opacity: 1; }
+        }
+
+        .segment::after {
+            content: '';
+            position: absolute;
+            bottom: 15%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 10px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(120, 219, 226, 0.6), 
+                rgba(255, 255, 255, 0.8), 
+                rgba(120, 219, 226, 0.6), 
+                transparent);
+            border-radius: 2px;
+            opacity: 0.8;
+            animation: vertebraeShimmer 1.5s ease-in-out infinite;
+        }
+
+        @keyframes vertebraeShimmer {
+            0%, 100% { opacity: 0.6; transform: translateX(-50%) scale(1); }
+            50% { opacity: 1; transform: translateX(-50%) scale(1.1); }
+        }
+
+        /* Enhanced Head with more detailed features */
+        .head {
+            width: 38px;
+            height: 42px;
+            background: none;
+            border: 3px solid rgba(255, 255, 255, 0.95);
+            border-radius: 70% 70% 30% 30%;
+            box-shadow: 
+                0 0 15px rgba(255, 255, 255, 0.6),
+                0 0 30px rgba(120, 219, 226, 0.4),
+                inset 0 0 8px rgba(120, 219, 226, 0.2);
+            position: relative;
+            animation: headBreathe 2.5s ease-in-out infinite;
+        }
+
+        @keyframes headBreathe {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .head::before {
+            content: '';
+            position: absolute;
+            top: 38%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 30px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(255, 255, 255, 0.8), 
+                rgba(120, 219, 226, 0.9), 
+                rgba(255, 255, 255, 0.8), 
+                transparent);
+            box-shadow: 0 0 8px rgba(120, 219, 226, 0.6);
+            border-radius: 2px;
+        }
+
+        .head::after {
+            content: '';
+            position: absolute;
+            top: 22%;
+            left: 24%;
+            width: 6px;
+            height: 6px;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 1) 0%, 
+                rgba(120, 219, 226, 0.8) 40%, 
+                transparent 70%);
+            border-radius: 50%;
+            box-shadow: 
+                16px 0 0 radial-gradient(circle, rgba(255, 255, 255, 1) 0%, rgba(120, 219, 226, 0.8) 40%, transparent 70%),
+                0 0 6px rgba(120, 219, 226, 0.8),
+                16px 0 6px rgba(120, 219, 226, 0.8);
+            animation: eyeGlow 3s ease-in-out infinite;
+        }
+
+        @keyframes eyeGlow {
+            0%, 100% { 
+                box-shadow: 
+                    16px 0 0 rgba(255, 255, 255, 0.9),
+                    0 0 6px rgba(120, 219, 226, 0.6),
+                    16px 0 6px rgba(120, 219, 226, 0.6);
+            }
+            50% { 
+                box-shadow: 
+                    16px 0 0 rgba(255, 255, 255, 1),
+                    0 0 12px rgba(120, 219, 226, 1),
+                    16px 0 12px rgba(120, 219, 226, 1);
+            }
+        }
+
+        .head span {
+            position: absolute;
+            top: 65%;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 22px;
+            height: 2px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(120, 219, 226, 0.7), 
+                rgba(255, 255, 255, 0.9), 
+                rgba(120, 219, 226, 0.7), 
+                transparent);
+            box-shadow: 0 0 6px rgba(120, 219, 226, 0.5);
+            border-radius: 1px;
+        }
+
+        /* Enhanced neck with gradient */
+        .neck {
+            width: 26px;
+            height: 30px;
+            background: none;
+            border: 2px solid rgba(120, 219, 226, 0.85);
+            border-radius: 40% 40% 45% 45%;
+            box-shadow: 
+                0 0 10px rgba(120, 219, 226, 0.4),
+                inset 0 0 5px rgba(120, 219, 226, 0.2);
+        }
+
+        /* Enhanced body with more detail */
+        .body {
+            width: 32px;
+            height: 36px;
+            background: none;
+            border: 2px solid rgba(120, 219, 226, 0.8);
+            border-radius: 45% 45% 50% 50%;
+            position: relative;
+            box-shadow: 
+                0 0 10px rgba(120, 219, 226, 0.3),
+                inset 0 0 5px rgba(120, 219, 226, 0.15);
+        }
+
+        .body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, 
+                    transparent 44%, 
+                    rgba(120, 219, 226, 0.6) 46%, 
+                    rgba(255, 255, 255, 0.8) 50%, 
+                    rgba(120, 219, 226, 0.6) 54%, 
+                    transparent 56%);
+            background-size: 8px 100%;
+            opacity: 0.7;
+            animation: bodyRipple 2s ease-in-out infinite;
+        }
+
+        @keyframes bodyRipple {
+            0%, 100% { opacity: 0.6; }
+            50% { opacity: 0.9; }
+        }
+
+        /* Enhanced tail with flowing effect */
+        .tail {
+            width: 20px;
+            height: 26px;
+            background: none;
+            border: 2px solid rgba(120, 219, 226, 0.75);
+            border-radius: 30% 30% 70% 70%;
+            transform-origin: top center;
+            position: relative;
+            box-shadow: 
+                0 0 8px rgba(120, 219, 226, 0.3),
+                inset 0 0 4px rgba(120, 219, 226, 0.15);
+        }
+
+        .tail::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: 
+                linear-gradient(90deg, 
+                    transparent 46%, 
+                    rgba(120, 219, 226, 0.5) 48%, 
+                    rgba(255, 255, 255, 0.7) 50%, 
+                    rgba(120, 219, 226, 0.5) 52%, 
+                    transparent 54%);
+            background-size: 4px 100%;
+            opacity: 0.6;
+            animation: tailFlow 1.8s ease-in-out infinite;
+        }
+
+        @keyframes tailFlow {
+            0%, 100% { opacity: 0.5; }
+            50% { opacity: 0.8; }
+        }
+
+        .tail:last-child {
+            border-radius: 20% 20% 80% 80%;
+            height: 30px;
+            border-color: rgba(255, 255, 255, 0.9);
+            box-shadow: 
+                0 0 12px rgba(255, 255, 255, 0.5),
+                0 0 25px rgba(120, 219, 226, 0.3);
+        }
+
+        .tail:last-child::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 3px;
+            height: 12px;
+            background: linear-gradient(180deg, 
+                rgba(255, 255, 255, 0.9), 
+                rgba(120, 219, 226, 0.8), 
+                transparent);
+            box-shadow: 0 0 8px rgba(120, 219, 226, 0.6);
+            border-radius: 2px;
+        }
+
+        .legs {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .leg {
+            position: absolute;
+            transform-origin: center center;
+            pointer-events: none;
+            z-index: 999;
+        }
+
+        .leg.front-left {
+            top: 20%;
+            left: -5px;
+            transform: rotate(-45deg);
+        }
+
+        .leg.front-right {
+            top: 20%;
+            right: -5px;
+            transform: rotate(45deg);
+        }
+
+        .leg.back-left {
+            bottom: 20%;
+            left: -5px;
+            transform: rotate(-135deg);
+        }
+
+        .leg.back-right {
+            bottom: 20%;
+            right: -5px;
+            transform: rotate(135deg);
+        }
+
+        /* Enhanced leg structure with longer segments */
+        .upper-leg {
+            width: 40px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(120, 219, 226, 0.9), 
+                rgba(255, 255, 255, 0.8), 
+                rgba(120, 219, 226, 0.7));
+            border: none;
+            box-shadow: 
+                0 0 6px rgba(120, 219, 226, 0.5),
+                0 2px 4px rgba(120, 219, 226, 0.3);
+            position: relative;
+            transform-origin: center left;
+            border-radius: 2px;
+            animation: legGlow 2.5s ease-in-out infinite alternate;
+        }
+
+        @keyframes legGlow {
+            0% { 
+                box-shadow: 
+                    0 0 6px rgba(120, 219, 226, 0.4),
+                    0 2px 4px rgba(120, 219, 226, 0.2);
+            }
+            100% { 
+                box-shadow: 
+                    0 0 10px rgba(120, 219, 226, 0.7),
+                    0 2px 6px rgba(120, 219, 226, 0.4);
+            }
+        }
+
+        .knee-joint {
+            position: absolute;
+            right: -4px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 8px;
+            height: 8px;
+            background: radial-gradient(circle, 
+                rgba(255, 255, 255, 1) 0%, 
+                rgba(120, 219, 226, 0.9) 40%, 
+                rgba(120, 219, 226, 0.6) 70%,
+                transparent 100%);
+            border: 2px solid rgba(120, 219, 226, 0.8);
+            border-radius: 50%;
+            box-shadow: 
+                0 0 10px rgba(120, 219, 226, 0.7),
+                inset 0 0 6px rgba(255, 255, 255, 0.4);
+            z-index: 2;
+            animation: jointPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes jointPulse {
+            0%, 100% { 
+                transform: translateY(-50%) scale(1);
+                box-shadow: 
+                    0 0 10px rgba(120, 219, 226, 0.7),
+                    inset 0 0 6px rgba(255, 255, 255, 0.4);
+            }
+            50% { 
+                transform: translateY(-50%) scale(1.3);
+                box-shadow: 
+                    0 0 15px rgba(120, 219, 226, 0.9),
+                    inset 0 0 8px rgba(255, 255, 255, 0.6);
+            }
+        }
+
+        .lower-leg {
+            position: absolute;
+            right: -42px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 38px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(120, 219, 226, 0.8), 
+                rgba(255, 255, 255, 0.7), 
+                rgba(120, 219, 226, 0.6));
+            border: none;
+            box-shadow: 
+                0 0 6px rgba(120, 219, 226, 0.4),
+                0 2px 4px rgba(120, 219, 226, 0.2);
+            transform-origin: left center;
+            border-radius: 2px;
+        }
+
+        /* Enhanced claws with better detail */
+        .foot {
+            position: absolute;
+            right: -18px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 3px;
+            background: linear-gradient(90deg, 
+                rgba(120, 219, 226, 0.8), 
+                rgba(255, 255, 255, 0.9), 
+                rgba(120, 219, 226, 0.7));
+            border: none;
+            box-shadow: 
+                0 0 6px rgba(120, 219, 226, 0.4),
+                0 2px 4px rgba(120, 219, 226, 0.2);
+            border-radius: 2px;
+        }
+
+        /* Sharper, more detailed claws */
+        .foot::before,
+        .foot::after,
+        .foot span::before,
+        .foot span::after {
+            content: '';
+            position: absolute;
+            width: 16px;
+            height: 1.5px;
+            background: linear-gradient(90deg, 
+                rgba(255, 255, 255, 0.9), 
+                rgba(120, 219, 226, 0.8), 
+                transparent);
+            box-shadow: 
+                0 0 6px rgba(120, 219, 226, 0.5),
+                0 1px 2px rgba(120, 219, 226, 0.3);
+            transform-origin: left center;
+            border-radius: 1px;
+            animation: clawShimmer 3s ease-in-out infinite;
+        }
+
+        .foot::before {
+            top: -7px;
+            right: -8px;
+            transform: rotate(-50deg);
+        }
+
+        .foot::after {
+            top: -3px;
+            right: -8px;
+            transform: rotate(-20deg);
+        }
+
+        .foot span::before {
+            bottom: -3px;
+            right: -8px;
+            transform: rotate(20deg);
+        }
+
+        .foot span::after {
+            bottom: -7px;
+            right: -8px;
+            transform: rotate(50deg);
+        }
+
+        @keyframes clawShimmer {
+            0%, 100% { 
+                opacity: 0.8;
+                box-shadow: 
+                    0 0 6px rgba(120, 219, 226, 0.4),
+                    0 1px 2px rgba(120, 219, 226, 0.2);
+            }
+            50% { 
+                opacity: 1;
+                box-shadow: 
+                    0 0 10px rgba(120, 219, 226, 0.7),
+                    0 1px 4px rgba(120, 219, 226, 0.4);
+            }
+        }
+
+        .foot span {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            left: 0;
+            top: 0;
+        }
+
+        /* Enhanced leg animations with more natural movement */
+        @keyframes legWalkFront {
+            0% { 
+                transform: rotate(-45deg); 
+            }
+            25% { 
+                transform: rotate(-75deg) scale(1.05); 
+            }
+            50% { 
+                transform: rotate(-15deg) scale(0.95); 
+            }
+            75% { 
+                transform: rotate(-60deg) scale(1.02); 
+            }
+            100% { 
+                transform: rotate(-45deg); 
+            }
+        }
+
+        @keyframes legWalkFrontRight {
+            0% { 
+                transform: rotate(45deg); 
+            }
+            25% { 
+                transform: rotate(75deg) scale(1.05); 
+            }
+            50% { 
+                transform: rotate(15deg) scale(0.95); 
+            }
+            75% { 
+                transform: rotate(60deg) scale(1.02); 
+            }
+            100% { 
+                transform: rotate(45deg); 
+            }
+        }
+
+        @keyframes legWalkBack {
+            0% { 
+                transform: rotate(-135deg); 
+            }
+            25% { 
+                transform: rotate(-165deg) scale(1.05); 
+            }
+            50% { 
+                transform: rotate(-105deg) scale(0.95); 
+            }
+            75% { 
+                transform: rotate(-150deg) scale(1.02); 
+            }
+            100% { 
+                transform: rotate(-135deg); 
+            }
+        }
+
+        @keyframes legWalkBackRight {
+            0% { 
+                transform: rotate(135deg); 
+            }
+            25% { 
+                transform: rotate(165deg) scale(1.05); 
+            }
+            50% { 
+                transform: rotate(105deg) scale(0.95); 
+            }
+            75% { 
+                transform: rotate(150deg) scale(1.02); 
+            }
+            100% { 
+                transform: rotate(135deg); 
+            }
+        }
+
+        /* Enhanced lower leg movement */
+        @keyframes lowerLegFlex {
+            0%, 100% { 
+                transform: translateY(-50%) rotate(0deg) scale(1); 
+            }
+            25% { 
+                transform: translateY(-50%) rotate(-20deg) scale(1.05); 
+            }
+            75% { 
+                transform: translateY(-50%) rotate(15deg) scale(0.95); 
+            }
+        }
+
+        .lower-leg {
+            animation: lowerLegFlex 0.8s infinite ease-in-out;
+        }
+
+        /* Enhanced grid with cooler appearance */
+        .grid {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.08;
+            background-image: 
+                linear-gradient(rgba(120, 219, 226, 0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(120, 219, 226, 0.15) 1px, transparent 1px),
+                radial-gradient(circle at 25% 25%, rgba(120, 219, 226, 0.05) 2px, transparent 2px),
+                radial-gradient(circle at 75% 75%, rgba(255, 119, 198, 0.05) 2px, transparent 2px);
+            background-size: 50px 50px, 50px 50px, 100px 100px, 100px 100px;
+            pointer-events: none;
+            animation: gridPulse 4s ease-in-out infinite;
+        }
+
+        @keyframes gridPulse {
+            0%, 100% { opacity: 0.06; }
+            50% { opacity: 0.12; }
+        }
+
+        /* Enhanced trail effect */
+        .trail {
+            position: absolute;
+            pointer-events: none;
+            width: 8px;
+            height: 4px;
+            background: linear-gradient(90deg, 
+                transparent, 
+                rgba(120, 219, 226, 0.6), 
+                rgba(255, 255, 255, 0.4), 
+                rgba(120, 219, 226, 0.6), 
+                transparent);
+            border-radius: 3px;
+            opacity: 0.6;
+            animation: trailFade 2s ease-out forwards;
+            box-shadow: 0 0 8px rgba(120, 219, 226, 0.3);
+        }
+
+        @keyframes trailFade {
+            0% {
+                opacity: 0.8;
+                transform: scale(1);
+                box-shadow: 0 0 8px rgba(120, 219, 226, 0.4);
+            }
+            100% {
+                opacity: 0;
+                transform: scale(0.3);
+                box-shadow: 0 0 4px rgba(120, 219, 226, 0.1);
+            }
+        }
+
+        /* Enhanced info panel */
+        .info {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: rgba(120, 219, 226, 0.9);
+            font-size: 16px;
+            z-index: 100;
+            text-shadow: 
+                0 0 10px rgba(120, 219, 226, 0.5),
+                0 0 20px rgba(120, 219, 226, 0.3);
+            background: rgba(0, 0, 0, 0.3);
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid rgba(120, 219, 226, 0.3);
+                         backdrop-filter: blur(5px);
+             -webkit-backdrop-filter: blur(5px);
+        }
+
+        .info div:first-child {
+            font-size: 18px;
+            margin-bottom: 8px;
+            background: linear-gradient(90deg, 
+                rgba(120, 219, 226, 1), 
+                rgba(255, 255, 255, 0.9), 
+                rgba(120, 219, 226, 1));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .code-sample {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+            border-radius: 8px;
+            padding: 15px;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: rgba(255, 255, 255, 0.8);
+            max-width: 350px;
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
+        }
+
+        .code-line {
+            margin: 2px 0;
+        }
+
+        .keyword { color: rgba(245, 158, 11, 0.8); }
+        .function { color: rgba(59, 130, 246, 0.8); }
+        .string { color: rgba(16, 185, 129, 0.8); }
+        .comment { color: rgba(107, 114, 128, 0.8); }
+
+        .footprint {
+            position: absolute;
+            width: 4px;
+            height: 6px;
+            background: radial-gradient(circle, rgba(255, 255, 255, 0.4), transparent);
+            border-radius: 50%;
+            opacity: 0.3;
+            animation: footprintFade 3s ease-out forwards;
+            pointer-events: none;
+        }
+
+        @keyframes footprintFade {
+            0% { opacity: 0.6; transform: scale(1); }
+            100% { opacity: 0; transform: scale(0.3); }
+        }
+
+        .legs.fast-movement {
+            animation-duration: 0.6s !important;
+        }
+
+        .legs.slow-movement {
+            animation-duration: 1.8s !important;
+        }
+
+        /* Click effect particles for skeletal theme */
+        .particle {
+            background: linear-gradient(90deg, rgba(255, 255, 255, 0.4), rgba(255, 255, 255, 0.2));
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="grid"></div>
+        
+        <div class="info">
+            <div>🦎 Cyber Lizard Cursor</div>
+            <div style="font-size: 12px; margin-top: 5px; opacity: 0.8;">
+                Enhanced with glowing effects and natural movement!
+            </div>
+        </div>
+
+        <div class="code-sample">
+            <div class="code-line"><span class="comment">// Enhanced skeletal structure</span></div>
+            <div class="code-line"><span class="keyword">class</span> <span class="function">CyberLizard</span> {</div>
+            <div class="code-line">&nbsp;&nbsp;<span class="function">constructor</span>() {</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.spine = <span class="string">'glowing_vertebrae'</span>;</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.legs = <span class="string">'enhanced_joints'</span>;</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.claws = <span class="string">'razor_sharp'</span>;</div>
+            <div class="code-line">&nbsp;&nbsp;&nbsp;&nbsp;<span class="keyword">this</span>.tail = <span class="string">'flowing_energy'</span>;</div>
+            <div class="code-line">&nbsp;&nbsp;}</div>
+            <div class="code-line">}</div>
+        </div>
+    </div>
+
+    <script>
+        class LizardCursor {
+            constructor() {
+                this.segments = [];
+                this.segmentCount = 15;  // Increased for more spine segments
+                this.mouseX = window.innerWidth / 2;
+                this.mouseY = window.innerHeight / 2;
+                this.lastMouseX = this.mouseX;
+                this.lastMouseY = this.mouseY;
+                this.speed = 0;
+                this.footprintTimer = 0;
+                this.spineOffset = 0;  // For spine wave movement
+                
+                this.init();
+                this.bindEvents();
+                this.animate();
+            }
+
+            init() {
+                // Create lizard segments with anatomical parts
+                for (let i = 0; i < this.segmentCount; i++) {
+                    const segment = document.createElement('div');
+                    segment.className = 'lizard-segment';
+                    
+                    const segmentInner = document.createElement('div');
+                    
+                    // Assign appropriate class based on anatomical part
+                    if (i === 0) {
+                        segmentInner.className = 'segment head';
+                        // Add extra head detail
+                        const headDetail = document.createElement('span');
+                        segmentInner.appendChild(headDetail);
+                    } else if (i === 1) {
+                        segmentInner.className = 'segment neck';
+                    } else if (i === 3 || i === 7) {  // Adjusted leg segment positions
+                        segmentInner.className = 'segment body';
+                        
+                        const legs = document.createElement('div');
+                        legs.className = 'legs';
+                        
+                        ['front-left', 'front-right', 'back-left', 'back-right'].forEach(legClass => {
+                            const leg = this.createStructuredLeg(legClass);
+                            legs.appendChild(leg);
+                        });
+                        
+                        segment.appendChild(legs);
+                    } else {
+                        segmentInner.className = i < 9 ? 'segment body' : 'segment tail';
+                    }
+                    
+                    segment.appendChild(segmentInner);
+                    document.body.appendChild(segment);
+                    
+                    this.segments.push({
+                        element: segment,
+                        x: this.mouseX,
+                        y: this.mouseY,
+                        targetX: this.mouseX,
+                        targetY: this.mouseY,
+                        angle: 0,
+                        type: i === 0 ? 'head' : 
+                              i === 1 ? 'neck' :
+                              i < 9 ? 'body' : 'tail'
+                    });
+                }
+            }
+
+            createStructuredLeg(legClass) {
+                const leg = document.createElement('div');
+                leg.className = `leg ${legClass}`;
+                
+                // Upper leg (femur)
+                const upperLeg = document.createElement('div');
+                upperLeg.className = 'upper-leg';
+                
+                // Knee joint
+                const kneeJoint = document.createElement('div');
+                kneeJoint.className = 'knee-joint';
+                
+                // Lower leg (tibia)
+                const lowerLeg = document.createElement('div');
+                lowerLeg.className = 'lower-leg';
+                
+                // Foot with multiple toes
+                const foot = document.createElement('div');
+                foot.className = 'foot';
+                
+                // Add span for additional toes
+                const toeSpan = document.createElement('span');
+                foot.appendChild(toeSpan);
+                
+                // Assemble the leg structure
+                lowerLeg.appendChild(foot);
+                upperLeg.appendChild(kneeJoint);
+                upperLeg.appendChild(lowerLeg);
+                leg.appendChild(upperLeg);
+                
+                return leg;
+            }
+
+            bindEvents() {
+                document.addEventListener('mousemove', (e) => {
+                    this.lastMouseX = this.mouseX;
+                    this.lastMouseY = this.mouseY;
+                    this.mouseX = e.clientX;
+                    this.mouseY = e.clientY;
+                    
+                    // Calculate speed for animation
+                    const dx = this.mouseX - this.lastMouseX;
+                    const dy = this.mouseY - this.lastMouseY;
+                    this.speed = Math.sqrt(dx * dx + dy * dy);
+                    
+                    // Create trail effect
+                    this.createTrail(e.clientX, e.clientY);
+                    
+                    // Create enhanced footprints
+                    this.footprintTimer++;
+                    if (this.footprintTimer > 6 && this.speed > 2) {
+                        this.createDetailedFootprint(e.clientX, e.clientY);
+                        this.footprintTimer = 0;
+                    }
+                });
+
+                document.addEventListener('click', (e) => {
+                    this.createClickEffect(e.clientX, e.clientY);
+                });
+
+                window.addEventListener('resize', () => {
+                    this.mouseX = window.innerWidth / 2;
+                    this.mouseY = window.innerHeight / 2;
+                });
+            }
+
+            createTrail(x, y) {
+                if (Math.random() > 0.5 && this.speed > 1) {
+                    const trail = document.createElement('div');
+                    trail.className = 'trail';
+                    trail.style.left = (x - 4) + 'px';
+                    trail.style.top = (y - 2) + 'px';
+                    
+                    // Add random rotation for more natural effect
+                    const rotation = (Math.random() - 0.5) * 30;
+                    trail.style.transform = `rotate(${rotation}deg)`;
+                    
+                    document.body.appendChild(trail);
+                    
+                    setTimeout(() => {
+                        if (trail.parentNode) {
+                            trail.parentNode.removeChild(trail);
+                        }
+                    }, 2000);
+                }
+            }
+
+            createDetailedFootprint(x, y) {
+                // Create more realistic lizard footprints with glowing effect
+                const footprintOffsets = [
+                    { x: -12, y: 2, size: 2.2, delay: 0 },     // Left front
+                    { x: 12, y: 2, size: 2.2, delay: 50 },     // Right front
+                    { x: -10, y: 10, size: 1.8, delay: 100 },  // Left back
+                    { x: 10, y: 10, size: 1.8, delay: 150 }    // Right back
+                ];
+                
+                footprintOffsets.forEach((offset, index) => {
+                    setTimeout(() => {
+                        const footprint = document.createElement('div');
+                        footprint.className = 'footprint';
+                        footprint.style.left = (x + offset.x) + 'px';
+                        footprint.style.top = (y + offset.y) + 'px';
+                        footprint.style.width = (offset.size * 3) + 'px';
+                        footprint.style.height = (offset.size * 4) + 'px';
+                        
+                        // Enhanced glowing footprint design
+                        footprint.style.background = `
+                            radial-gradient(circle at 30% 20%, rgba(120, 219, 226, 0.8) 1px, transparent 2px),
+                            radial-gradient(circle at 50% 15%, rgba(120, 219, 226, 0.8) 1px, transparent 2px),
+                            radial-gradient(circle at 70% 20%, rgba(120, 219, 226, 0.8) 1px, transparent 2px),
+                            radial-gradient(circle at 50% 40%, rgba(120, 219, 226, 0.8) 1px, transparent 2px),
+                            radial-gradient(circle, rgba(120, 219, 226, 0.4), transparent)
+                        `;
+                        footprint.style.boxShadow = '0 0 8px rgba(120, 219, 226, 0.4)';
+                        
+                        document.body.appendChild(footprint);
+                        
+                        setTimeout(() => {
+                            if (footprint.parentNode) {
+                                footprint.parentNode.removeChild(footprint);
+                            }
+                        }, 5000);
+                    }, offset.delay);
+                });
+            }
+
+            createClickEffect(x, y) {
+                // Enhanced cyber-style click effect
+                for (let i = 0; i < 20; i++) {
+                    setTimeout(() => {
+                        const particle = document.createElement('div');
+                        particle.style.position = 'absolute';
+                        particle.style.left = x + 'px';
+                        particle.style.top = y + 'px';
+                        particle.style.width = (4 + Math.random() * 8) + 'px';
+                        particle.style.height = '2px';
+                        particle.style.background = `linear-gradient(90deg, 
+                            rgba(120, 219, 226, 0.8), 
+                            rgba(255, 255, 255, 0.6), 
+                            rgba(120, 219, 226, 0.4))`;
+                        particle.style.borderRadius = '2px';
+                        particle.style.pointerEvents = 'none';
+                        particle.style.zIndex = '1001';
+                        particle.style.boxShadow = '0 0 8px rgba(120, 219, 226, 0.5)';
+                        
+                        const angle = (Math.PI * 2 * i) / 20;
+                        const velocity = 4 + Math.random() * 6;
+                        const vx = Math.cos(angle) * velocity;
+                        const vy = Math.sin(angle) * velocity;
+                        
+                        document.body.appendChild(particle);
+                        
+                        let particleX = x;
+                        let particleY = y;
+                        let opacity = 1;
+                        let gravity = 0.2;
+                        let velocityY = vy;
+                        let rotation = Math.random() * 360;
+                        let rotationSpeed = (Math.random() - 0.5) * 15;
+                        
+                        const animateParticle = () => {
+                            particleX += vx * 0.98; // Add air resistance
+                            particleY += velocityY;
+                            velocityY += gravity;
+                            opacity -= 0.015;
+                            rotation += rotationSpeed;
+                            
+                            particle.style.left = particleX + 'px';
+                            particle.style.top = particleY + 'px';
+                            particle.style.opacity = opacity;
+                            particle.style.transform = `rotate(${rotation}deg) scale(${opacity})`;
+                            
+                            if (opacity > 0 && particleY < window.innerHeight + 50) {
+                                requestAnimationFrame(animateParticle);
+                            } else {
+                                if (particle.parentNode) {
+                                    particle.parentNode.removeChild(particle);
+                                }
+                            }
+                        };
+                        
+                        requestAnimationFrame(animateParticle);
+                    }, i * 15);
+                }
+                
+                // Add energy wave effect
+                const wave = document.createElement('div');
+                wave.style.position = 'absolute';
+                wave.style.left = (x - 25) + 'px';
+                wave.style.top = (y - 25) + 'px';
+                wave.style.width = '50px';
+                wave.style.height = '50px';
+                wave.style.border = '2px solid rgba(120, 219, 226, 0.6)';
+                wave.style.borderRadius = '50%';
+                wave.style.pointerEvents = 'none';
+                wave.style.zIndex = '999';
+                wave.style.animation = 'waveExpand 1s ease-out forwards';
+                
+                document.body.appendChild(wave);
+                
+                setTimeout(() => {
+                    if (wave.parentNode) {
+                        wave.parentNode.removeChild(wave);
+                    }
+                }, 1000);
+            }
+
+            updateSegments() {
+                // Update spine wave movement
+                this.spineOffset += 0.1;
+                
+                // Update head position with smoother tracking
+                const headSmoothing = 0.2;
+                this.segments[0].targetX = this.mouseX;
+                this.segments[0].targetY = this.mouseY;
+                
+                // Calculate overall movement direction for leg adjustment
+                const dx = this.mouseX - this.lastMouseX;
+                const dy = this.mouseY - this.lastMouseY;
+                const movementAngle = Math.atan2(dy, dx);
+                
+                // Update each segment
+                for (let i = 0; i < this.segments.length; i++) {
+                    const segment = this.segments[i];
+                    
+                    // Adjust smoothness based on segment type and speed
+                    let smoothness = 0.15;
+                    switch (segment.type) {
+                        case 'head':
+                            smoothness = headSmoothing;
+                            break;
+                        case 'neck':
+                            smoothness = 0.18;
+                            break;
+                        case 'body':
+                            smoothness = 0.15 + (i * 0.01);
+                            break;
+                        case 'tail':
+                            smoothness = 0.12 + (i * 0.015);
+                            break;
+                    }
+                    
+                    // Add speed-based smoothness adjustment
+                    smoothness *= Math.max(0.5, Math.min(1.5, 1 / (this.speed * 0.1 + 1)));
+                    
+                    const segDx = segment.targetX - segment.x;
+                    const segDy = segment.targetY - segment.y;
+                    
+                    segment.x += segDx * smoothness;
+                    segment.y += segDy * smoothness;
+                    
+                    // Calculate angle for realistic body orientation
+                    if (Math.abs(segDx) > 0.1 || Math.abs(segDy) > 0.1) {
+                        segment.angle = Math.atan2(segDy, segDx) * (180 / Math.PI);
+                        
+                        // Add natural movement patterns based on segment type
+                        if (segment.type === 'tail') {
+                            // More pronounced tail movement
+                            const tailWave = Math.sin(Date.now() * 0.01 + i * 0.5) * (18 + i);
+                            segment.angle += tailWave;
+                        } else if (segment.type === 'neck') {
+                            // Subtle neck movement
+                            segment.angle += Math.sin(Date.now() * 0.008) * 5;
+                        } else if (segment.type === 'body') {
+                            // Spine wave movement
+                            const spineWave = Math.sin(this.spineOffset + i * 0.3) * 6; // Reduced wave for more intact body
+                            segment.angle += spineWave;
+                            
+                            // Adjust leg positioning based on movement
+                            const legs = segment.element.querySelector('.legs');
+                            if (legs) {
+                                const legSpeed = Math.min(1, this.speed / 10);
+                                const movementInfluence = Math.sin(Date.now() * 0.01) * 12 * legSpeed; // Reduced movement for stability
+                                
+                                // Adjust leg angles based on movement direction
+                                const frontLeftLeg = legs.querySelector('.front-left');
+                                const frontRightLeg = legs.querySelector('.front-right');
+                                const backLeftLeg = legs.querySelector('.back-left');
+                                const backRightLeg = legs.querySelector('.back-right');
+                                
+                                if (frontLeftLeg && frontRightLeg && backLeftLeg && backRightLeg) {
+                                    // Base angles for outward positioning
+                                    const baseAngles = {
+                                        frontLeft: -45,
+                                        frontRight: 45,
+                                        backLeft: -135,
+                                        backRight: 135
+                                    };
+                                    
+                                    // Add movement-based adjustment
+                                    const movementAdjustment = (movementAngle * 180 / Math.PI) * 0.15; // Reduced for smoother movement
+                                    
+                                    // Enhanced leg movement range
+                                    frontLeftLeg.style.transform = `rotate(${baseAngles.frontLeft + movementInfluence + movementAdjustment}deg)`;
+                                    frontRightLeg.style.transform = `rotate(${baseAngles.frontRight - movementInfluence + movementAdjustment}deg)`;
+                                    backLeftLeg.style.transform = `rotate(${baseAngles.backLeft - movementInfluence + movementAdjustment}deg)`;
+                                    backRightLeg.style.transform = `rotate(${baseAngles.backRight + movementInfluence + movementAdjustment}deg)`;
+                                }
+                            }
+                        }
+                    }
+                    
+                    // Update DOM position with adjusted offsets
+                    const offset = segment.type === 'head' ? 18 : 
+                                 segment.type === 'body' ? 16 :
+                                 segment.type === 'neck' ? 15 : 13;
+                    
+                    segment.element.style.left = (segment.x - offset) + 'px';
+                    segment.element.style.top = (segment.y - offset) + 'px';
+                    
+                    // Set target for next segment with tighter spacing for intact body
+                    if (i < this.segments.length - 1) {
+                        const nextSegment = this.segments[i + 1];
+                        let distance = 18;  // Reduced base distance for tighter body
+                        
+                        // Adjust spacing based on segment type
+                        if (segment.type === 'head') {
+                            distance = 16;  // Closer neck connection
+                        } else if (segment.type === 'neck') {
+                            distance = 17;  // Smooth transition to body
+                        } else if (segment.type === 'body') {
+                            distance = 18;  // Consistent body spacing
+                        } else if (segment.type === 'tail') {
+                            distance = 15 - (i - 9) * 1.2;  // Gradual tail tapering
+                        }
+                        
+                        const angle = Math.atan2(segment.y - nextSegment.y, segment.x - nextSegment.x);
+                        nextSegment.targetX = segment.x - Math.cos(angle) * distance;
+                        nextSegment.targetY = segment.y - Math.sin(angle) * distance;
+                    }
+                    
+                    // Apply transformations with anatomically correct scaling
+                    let scale = 1;
+                    switch (segment.type) {
+                        case 'head':
+                            scale = 1;
+                            break;
+                        case 'neck':
+                            scale = 0.96;
+                            break;
+                        case 'body':
+                            scale = 0.92 - ((i - 2) * 0.015); // More gradual scaling
+                            break;
+                        case 'tail':
+                            scale = 0.78 - ((i - 9) * 0.05);
+                            break;
+                    }
+                    
+                    const opacity = segment.type === 'tail' ? 
+                                  Math.max(0.4, 1 - ((i - 9) * 0.08)) :
+                                  1 - (i * 0.025); // Slightly less opacity reduction
+                    
+                    segment.element.style.transform = `scale(${scale}) rotate(${segment.angle}deg)`;
+                    segment.element.style.opacity = Math.max(opacity, 0.35);
+                }
+            }
+
+            animate() {
+                this.updateSegments();
+                requestAnimationFrame(() => this.animate());
+            }
+        }
+
+        // Initialize the enhanced lizard cursor
+        document.addEventListener('DOMContentLoaded', () => {
+            new LizardCursor();
+        });
+
+        // Enhanced keyboard interactions
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space') {
+                e.preventDefault();
+                // Create cyber lizard swarm effect
+                for (let i = 0; i < 12; i++) {
+                    setTimeout(() => {
+                        const x = Math.random() * window.innerWidth;
+                        const y = Math.random() * window.innerHeight;
+                        
+                        const tempLizard = document.createElement('div');
+                        tempLizard.style.position = 'absolute';
+                        tempLizard.style.left = x + 'px';
+                        tempLizard.style.top = y + 'px';
+                        tempLizard.style.width = '24px';
+                        tempLizard.style.height = '28px';
+                        tempLizard.style.background = 'linear-gradient(135deg, rgba(120, 219, 226, 0.8), rgba(255, 255, 255, 0.6))';
+                        tempLizard.style.borderRadius = '40% 40% 60% 60%';
+                        tempLizard.style.border = '2px solid rgba(120, 219, 226, 0.9)';
+                        tempLizard.style.boxShadow = '0 0 25px rgba(120, 219, 226, 0.6), 0 0 50px rgba(120, 219, 226, 0.3)';
+                        tempLizard.style.pointerEvents = 'none';
+                        tempLizard.style.zIndex = '999';
+                        tempLizard.style.animation = 'cyberFade 3s ease-out forwards';
+                        
+                        // Add random movement
+                        const moveX = (Math.random() - 0.5) * 200;
+                        const moveY = (Math.random() - 0.5) * 200;
+                        tempLizard.style.transform = `translate(${moveX}px, ${moveY}px) rotate(${Math.random() * 360}deg)`;
+                        
+                        document.body.appendChild(tempLizard);
+                        
+                        setTimeout(() => {
+                            if (tempLizard.parentNode) {
+                                tempLizard.parentNode.removeChild(tempLizard);
+                            }
+                        }, 3000);
+                    }, i * 80);
+                }
+            }
+        });
+
+        // Add dynamic CSS animations
+        const style = document.createElement('style');
+        style.textContent = `
+            @keyframes waveExpand {
+                0% {
+                    transform: scale(0);
+                    opacity: 1;
+                    box-shadow: 0 0 20px rgba(120, 219, 226, 0.8);
+                }
+                100% {
+                    transform: scale(3);
+                    opacity: 0;
+                    box-shadow: 0 0 50px rgba(120, 219, 226, 0.2);
+                }
+            }
+            
+            @keyframes cyberFade {
+                0% {
+                    opacity: 1;
+                    transform: translate(0, 0) rotate(0deg) scale(1);
+                    box-shadow: 0 0 25px rgba(120, 219, 226, 0.8), 0 0 50px rgba(120, 219, 226, 0.4);
+                }
+                50% {
+                    opacity: 0.8;
+                    box-shadow: 0 0 35px rgba(120, 219, 226, 1), 0 0 70px rgba(120, 219, 226, 0.6);
+                }
+                100% {
+                    opacity: 0;
+                    transform: translate(var(--moveX, 0), var(--moveY, 0)) rotate(360deg) scale(0.3);
+                    box-shadow: 0 0 10px rgba(120, 219, 226, 0.2);
+                }
+            }
+            
+            .front-left {
+                animation: legWalkFront 0.8s infinite ease-in-out;
+            }
+            
+            .front-right {
+                animation: legWalkFrontRight 0.8s infinite ease-in-out 0.4s;
+            }
+            
+            .back-left {
+                animation: legWalkBack 0.8s infinite ease-in-out 0.2s;
+            }
+            
+            .back-right {
+                animation: legWalkBackRight 0.8s infinite ease-in-out 0.6s;
+            }
+            
+            .foot span {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                left: 0;
+                top: 0;
+            }
+        `;
+        document.head.appendChild(style);
+    </script>
+</body>
+</html>
